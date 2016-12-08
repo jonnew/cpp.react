@@ -11,6 +11,14 @@
 
 #include "react/detail/Defs.h"
 
+// JPN: Added to prevent:
+//
+// call to function 'Equals' that is neither visible in
+// the template definition nor found by argument-dependent lookup
+//
+// for call to Equals() which is declared and defined in detail/ReactiveBase.h
+#include "react/detail/ReactiveBase.h" 
+
 #include <memory>
 #include <utility>
 

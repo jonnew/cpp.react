@@ -28,7 +28,7 @@ if(build_examples)
 endif()
 
 ### benchmarks/ 
-option(build_benchmarks "Build benchmarks?" OFF)
+option(build_benchmarks "Build benchmarks?" ON)
 if(build_benchmarks)
 	add_subdirectory(benchmarks)
 endif()

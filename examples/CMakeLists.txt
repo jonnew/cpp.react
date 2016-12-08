@@ -37,3 +37,7 @@ target_link_libraries(Example_BasicSynchronization CppReact)
 ### Example_Sandbox
 add_executable(Example_Sandbox src/Main.cpp)
 target_link_libraries(Example_Sandbox CppReact)
+
+### Spike det
+add_executable(SpikeDetect src/SpikeDetect.cpp src/filt.cpp)
+target_link_libraries(SpikeDetect CppReact)
