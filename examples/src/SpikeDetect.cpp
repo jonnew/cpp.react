@@ -1,14 +1,13 @@
+#include <random>
+
+#include "EphysInput.hpp"
 #include "Time.hpp"
 #include "Trode.hpp"
-#include "EphysInput.hpp"
-
-#define MakeVoltSource(D) 
 
 using namespace decoder;
 
 int main()
 {
-
     REACTIVE_DOMAIN(D, sequential)
 
     const size_t M = 8;
@@ -18,9 +17,9 @@ int main()
 
     std::vector<VoltageSource<D>> e;
     for (int i = 0; i < M; i++)
-        e.emplace_back(MakeEventSource<D, VoltageT>());
+        e.push_back(MakeEventSource<D, VoltageT>());
 
-    EphysInput4<D> lfp(time, e[0], e[1], e[2], e[3]);
+    //EphysInput4<D> lfp(time, e[0], e[1], e[2], e[3]);
 
 
 

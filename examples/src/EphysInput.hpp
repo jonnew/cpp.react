@@ -1,6 +1,8 @@
 #pragma once
 
-#include "DecoderTypes.h"
+#include "DecoderTypes.hpp"
+#include "Time.hpp"
+#include "Utility.hpp"
 #include "react/Domain.h"
 
 namespace decoder {
@@ -55,10 +57,13 @@ public:
     USING_REACTIVE_DOMAIN(D)
 
     Events<D, detail::VTuple<N>> voltages; // Input
-    LFPs<D,N> lfp = Transform(voltages, [](detail::VTuple<N> v, LFP<N> l) {
+    LFPs<D,N> lfp = Transform(voltages, [](detail::VTuple<N> v) {
 
-        for (size_t i = 0; i < N; i++)
-            l[i] = std::get<0>(v);
+        LFP<N> l;
+        int k = 0;
+        for_each(v, [&l, &k](VoltageT value) {
+            l[k++]= value;
+        });
 
         return l;
 
@@ -73,7 +78,6 @@ public:
 private:
     Time<D> &time;
 };
-
 
 template <typename D>
 using EphysInput1 = EphysInput<D, VoltageSource<D>>;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DecoderTypes.h"
+#include "DecoderTypes.hpp"
 #include "react/Algorithm.h"
 #include "react/Domain.h"
 #include "react/Signal.h"
