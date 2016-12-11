@@ -107,7 +107,7 @@ namespace example2
 
             points.emplace_back(ctx.Await(mouseDown));
 
-            auto count = ctx.Get(counter);
+            ctx.Get(counter);
 
             ctx.RepeatUntil(mouseUp, [&] {
                 points.emplace_back(ctx.Await(mouseMove));

@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <utility>
+#include <type_traits>
 
 #include "GraphBase.h"
 
@@ -35,12 +36,10 @@ template
 class SignalNode : public ObservableNode<D>
 {
 public:
-    SignalNode() = default;
 
     template <typename T>
     explicit SignalNode(T&& value) :
-        SignalNode::ObservableNode( ),
-        value_( std::forward<T>(value) )
+        value_{std::forward<T>(value)}
     {}
 
     const S& ValueRef() const
@@ -72,8 +71,7 @@ class VarNode :
 public:
     template <typename T>
     VarNode(T&& value) :
-        VarNode::SignalNode( std::forward<T>(value) ),
-        newValue_( value )
+        VarNode::SignalNode( std::forward<T>(value) )
     {
         Engine::OnNodeCreate(*this);
     }
@@ -95,7 +93,7 @@ public:
     template <typename V>
     void AddInput(V&& newValue)
     {
-        newValue_ = std::forward<V>(newValue);
+        pushNewValue(std::forward<V>(newValue));
 
         isInputAdded_ = true;
 
@@ -120,7 +118,7 @@ public:
         // in ApplyInput
         else
         {
-            func(newValue_);            
+            func(getNewValue());
         }
     }
 
@@ -133,9 +131,9 @@ public:
         {
             isInputAdded_ = false;
 
-            if (! Equals(this->value_, newValue_))
+            if (! Equals(this->value_, getNewValue()))
             {
-                this->value_ = std::move(newValue_);
+                popNewValue();
                 Engine::OnInputChange(*this, turn);
                 return true;
             }
@@ -159,7 +157,26 @@ public:
     }
 
 private:
-    S       newValue_;
+
+    S & getNewValue()
+    {
+        return *reinterpret_cast<S*>(newValueData);
+    }
+
+    template <typename V>
+    void pushNewValue(V && v)
+    {
+        new (newValueData) S{std::forward<V>(v)};
+    }
+
+    void popNewValue()
+    {
+        this->value_ = std::move(*reinterpret_cast<S*>(newValueData));
+    }
+
+    // so that we don't require S to be default constructible
+    std::aligned_storage_t<sizeof(S), alignof(S)> newValueData[1];
+
     bool    isInputAdded_ = false;
     bool    isInputModified_ = false;
 };
@@ -180,11 +197,6 @@ public:
     FunctionOp(FIn&& func, TDepsIn&& ... deps) :
         FunctionOp::ReactiveOpBase( DontMove(), std::forward<TDepsIn>(deps) ... ),
         func_( std::forward<FIn>(func) )
-    {}
-
-    FunctionOp(FunctionOp&& other) :
-        FunctionOp::ReactiveOpBase( std::move(other) ),
-        func_( std::move(other.func_) )
     {}
 
     S Evaluate() 
@@ -238,13 +250,10 @@ class SignalOpNode :
     using Engine = typename SignalOpNode::Engine;
 
 public:
-    template <typename ... TArgs>
-    SignalOpNode(TArgs&& ... args) :
-        SignalOpNode::SignalNode( ),
-        op_( std::forward<TArgs>(args) ... )
+    explicit SignalOpNode(TOp op) :
+        SignalOpNode::SignalNode{op.Evaluate()},
+        op_{std::move(op)}
     {
-        this->value_ = op_.Evaluate();
-
         Engine::OnNodeCreate(*this);
         op_.template Attach<D>(*this);
     }
