@@ -98,7 +98,7 @@ public:
     public:
         ScopedTimer(ConditionalTimer& parent, const size_t& count) :
             parent_( parent ),
-            count_( count )
+            count_( (std::chrono::microseconds::rep&)count )
         {
             if (!parent_.shouldMeasure_)
                 return;
