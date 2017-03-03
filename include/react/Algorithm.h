@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "Event.h"
 #include "react/detail/Defs.h"
 
 #include <memory>

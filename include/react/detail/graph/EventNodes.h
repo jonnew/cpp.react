@@ -325,13 +325,13 @@ public:
     {}
 
     template <typename TTurn, typename TCollector>
-    void Collect(const TTurn& turn, const TCollector& collector) const
+    void Collect(const TTurn& turn, const TCollector& collector) const // const NOTE: Shea, 2016-12-16 to all mutable Transform
     {
         collectImpl(turn, TransformEventCollector<TCollector>( func_, collector ), getDep());
     }
 
     template <typename TTurn, typename TCollector, typename TFunctor>
-    void CollectRec(const TFunctor& functor) const
+    void CollectRec(const TFunctor& functor) const // const NOTE: Shea, 2016-12-16 to all mutable Transform
     {
         // Can't recycle functor because MyFunc needs replacing
         Collect<TTurn,TCollector>(functor.MyTurn, functor.MyCollector);
@@ -343,7 +343,7 @@ private:
     template <typename TTarget>
     struct TransformEventCollector
     {
-        TransformEventCollector(const TFunc& func, const TTarget& target) :
+        TransformEventCollector(const TFunc& func, const TTarget& target) : // const TFunc& func NOTE: Shea, 2016-12-16 to all mutable Transform
             MyFunc( func ),
             MyTarget( target )
         {}
@@ -353,7 +353,7 @@ private:
             MyTarget(MyFunc(e));
         }
 
-        const TFunc&    MyFunc;
+        const TFunc&    MyFunc; // const NOTE: Shea, 2016-12-16 to all mutable Transform
         const TTarget&  MyTarget;
     };
 
