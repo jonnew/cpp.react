@@ -240,7 +240,7 @@ private:
 
     TFunc   func_;
 
-    virtual void detachObserver()
+    virtual void detachObserver() override
     {
         if (auto p = subject_.lock())
         {
