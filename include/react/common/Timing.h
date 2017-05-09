@@ -151,8 +151,9 @@ public:
             using std::chrono::duration_cast;
             using std::chrono::microseconds;
 
-            parent_.isThresholdExceeded_ =
-                duration_cast<microseconds>(now() - startTime_).count() > (threshold * count_);
+            parent_.isThresholdExceeded_
+                = duration_cast<microseconds>(now() - startTime_).count()
+                  > static_cast<long long>(threshold * count_);
 #endif
         }
 
